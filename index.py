@@ -62,7 +62,7 @@ def main():
         print("Selecting known and unknown keys for search tests...")
         knownKeys = pick_known_keys(randomRecords)
         unknownKeys = pick_unknown_keys(randomRecords)
-        print("Keys selected.")
+        print("Keys selected.", knownKeys, unknownKeys)
 
         for tree_type, tree_variants in trees.items():
             for variant, tree in tree_variants.items():

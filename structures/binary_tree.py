@@ -6,6 +6,7 @@ class BinaryTreeNode:
         self.left = None
         self.right = None
 
+
 class BinaryTree:
     def __init__(self):
         self.root = None
@@ -15,23 +16,28 @@ class BinaryTree:
         if not self.root:
             self.root = new_node
             return
-        
+
         current = self.root
         while True:
             if key < current.key:
                 if current.left is None:
                     current.left = new_node
                     return
-                current = current.left
-            else:
+                else:
+                    current = current.left
+            elif key > current.key:
                 if current.right is None:
                     current.right = new_node
                     return
-                current = current.right
+                else:
+                    current = current.right
+            else:
+                # If key is equal to current.key, decide if duplicates are allowed or just return
+                return  # Or handle duplicates if needed
 
-    def search_with_count(self, node, key):
+    def search_with_count(self, _, key):
         comparisons = 0
-        current = node
+        current = self.root
         while current:
             comparisons += 1
             if key == current.key:

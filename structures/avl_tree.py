@@ -10,7 +10,7 @@ class AVLNode:
 class AVLTree:
     def __init__(self):
         self.root = None
-        
+
     def _get_height(self, node):
         return node.height if node else 0
 
@@ -19,9 +19,9 @@ class AVLTree:
 
     def _rotate_right(self, y):
         x = y.left
-        T2 = x.right
+        T3 = x.right
         x.right = y
-        y.left = T2
+        y.left = T3
         y.height = 1 + max(self._get_height(y.left), self._get_height(y.right))
         x.height = 1 + max(self._get_height(x.left), self._get_height(x.right))
         return x
@@ -64,13 +64,11 @@ class AVLTree:
         return node
 
     def search_with_count(self, node, key):
-        comparisons = 0
-        while node:
-            comparisons += 1
-            if key == node.key:
-                return node, comparisons
-            elif key < node.key:
-                node = node.left
-            else:
-                node = node.right
-        return None, comparisons
+        if not node or node.key == key:
+            return node, 1
+        if node.key < key:
+            foundNode, count = self.search_with_count(node.right, key)
+            return foundNode, count + 1
+        foundNode, count = self.search_with_count(node.left, key)
+        return foundNode, count + 1
+    
