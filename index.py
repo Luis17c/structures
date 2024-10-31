@@ -1,6 +1,6 @@
 import time
 
-from structures.sequencial_tree import SequentialTree
+from structures.sequencial_list import SequentialList
 from structures.binary_tree import BinaryTree
 from structures.avl_tree import AVLTree
 
@@ -30,8 +30,8 @@ def main():
 
         trees = {
             'sequencial': {
-                'random': SequentialTree(),
-                'sorted': SequentialTree()
+                'random': SequentialList(),
+                'sorted': SequentialList()
             },
             'binary': {
                 'random': BinaryTree(),
@@ -62,7 +62,7 @@ def main():
         print("Selecting known and unknown keys for search tests...")
         knownKeys = pick_known_keys(randomRecords)
         unknownKeys = pick_unknown_keys(randomRecords)
-        print("Keys selected.", knownKeys, unknownKeys)
+        print("Keys selected.")
 
         for tree_type, tree_variants in trees.items():
             for variant, tree in tree_variants.items():

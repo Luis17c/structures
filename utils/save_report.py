@@ -30,7 +30,7 @@ def save_report(report_data, filename="search_report.csv"):
                         row[4] == search_type_value
                     ]
                     
-                    print(f"Filtered data for size={size}, file_type={file_type}, search_type={search_type}: {filtered_data}")
+                    print(f"Filtered data for size={size}, file_type={file_type}, search_type={search_type}")
                     
                     row_data = [size, file_type, search_type]
                     

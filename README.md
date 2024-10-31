@@ -9,7 +9,7 @@ O projeto está organizado da seguinte forma:
 project/ 
     ├── index.py # Script principal para executar o projeto 
     ├── structures/ # Pasta com as classes de estrutura de dados 
-        ├── sequencial_tree.py # Implementação da lista sequencial │ 
+        ├── sequencial_list.py # Implementação da lista sequencial │ 
         ├── binary_tree.py # Implementação da árvore binária │ 
         └── avl_tree.py # Implementação da árvore AVL 
     ├── functions/ # Funções auxiliares para geração e seleção de dados 

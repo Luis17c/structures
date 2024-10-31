@@ -1,15 +1,15 @@
-class SequencialTreeNode:
+class SequencialListNode:
     def __init__(self, key, data1, data2):
         self.key = key
         self.data1 = data1
         self.data2 = data2
 
-class SequentialTree:
+class SequentialList:
     def __init__(self):
         self.tree = []
 
     def insert(self, key, data1, data2):
-        node = SequencialTreeNode(key, data1, data2)
+        node = SequencialListNode(key, data1, data2)
         self.tree.append(node)
 
     def search_with_count(self, _, key):
