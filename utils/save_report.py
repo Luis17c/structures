@@ -1,5 +1,6 @@
 import csv
 import os
+from collections import defaultdict
 
 def save_report(report_data, filename="search_report.csv"):
     reports_dir = os.path.join(os.path.dirname(__file__), '..', 'reports')
@@ -7,6 +8,25 @@ def save_report(report_data, filename="search_report.csv"):
     
     file_path = os.path.join(reports_dir, filename)
     
+    # Estrutura para acumular os valores e contar as amostragens
+    aggregated_data = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: {
+        "sequencial": {"comparisons": 0, "time": 0, "count": 0},
+        "binary": {"comparisons": 0, "time": 0, "count": 0},
+        "avl": {"comparisons": 0, "time": 0, "count": 0}
+    })))
+    
+    # Agregar dados de comparação e tempo
+    for row in report_data:
+        size, sample, tree_type, variant, key, search_type, comparisons, time = row
+        file_type = "Ordenado" if variant == "sorted" else "Nao Ordenado"
+        search_type_name = "Presente" if search_type == "known" else "Nao Presente"
+        
+        tree_data = aggregated_data[size][file_type][search_type_name][tree_type]
+        tree_data["comparisons"] += comparisons
+        tree_data["time"] += time
+        tree_data["count"] += 1
+
+    # Escrever os dados no CSV
     with open(file_path, mode='w', newline='') as file:
         writer = csv.writer(file)
         
@@ -17,30 +37,17 @@ def save_report(report_data, filename="search_report.csv"):
             "AVL - No Comp.", "AVL - Tempo (ms)"
         ])
         
-        for size in sorted(set([row[0] for row in report_data])):
+        for size in sorted(aggregated_data.keys()):
             for file_type in ["Ordenado", "Nao Ordenado"]:
                 for search_type in ["Presente", "Nao Presente"]:
-                    variant = "sorted" if file_type == "Ordenado" else "random"
-                    search_type_value = "known" if search_type == "Presente" else "unknown"
-                    
-                    filtered_data = [
-                        row for row in report_data 
-                        if row[0] == size and 
-                        row[2] == variant and 
-                        row[4] == search_type_value
-                    ]
-                    
-                    print(f"Filtered data for size={size}, file_type={file_type}, search_type={search_type}")
-                    
                     row_data = [size, file_type, search_type]
                     
                     for tree_type in ["sequencial", "binary", "avl"]:
-                        tree_data = next(
-                            (item for item in filtered_data if item[1] == tree_type), 
-                            None
-                        )
-                        if tree_data:
-                            row_data.extend([tree_data[5], tree_data[6]])
+                        tree_data = aggregated_data[size][file_type][search_type].get(tree_type, {})
+                        if tree_data["count"] > 0:
+                            avg_comparisons = tree_data["comparisons"] / tree_data["count"]
+                            avg_time = tree_data["time"] / tree_data["count"]
+                            row_data.extend([avg_comparisons, avg_time])
                         else:
                             row_data.extend(["-", "-"])
                     

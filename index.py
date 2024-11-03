@@ -17,86 +17,73 @@ def main():
     num_samples = 15
 
     for size in sizes:
-        print(f"Generating CSV files with {size} records...")
-        generate_csv(size)
-        print(f"CSV files for size {size} generated!")
+        for sample in range(num_samples):  # Loop para gerar múltiplas amostragens
+            print(f"Generating CSV files with {size} records for sample {sample + 1}...")
+            generate_csv(size)  # Gera novos dados para cada amostragem
+            print(f"CSV files for size {size} generated for sample {sample + 1}!")
 
-        randomFilename = f"random_data_{size}.csv"
-        sortedFilename = f"sorted_data_{size}.csv"
+            randomFilename = f"random_data_{size}.csv"
+            sortedFilename = f"sorted_data_{size}.csv"
 
-        print(f"Loading data from {randomFilename} and {sortedFilename}...")
-        randomRecords = load_csv(randomFilename)
-        sortedRecords = load_csv(sortedFilename)
-        print("Data loaded successfully.")
+            print(f"Loading data from {randomFilename} and {sortedFilename}...")
+            randomRecords = load_csv(randomFilename)
+            sortedRecords = load_csv(sortedFilename)
+            print("Data loaded successfully.")
 
-        trees = {
-            'sequencial': {
-                'random': SequentialList(),
-                'sorted': SequentialList()
-            },
-            'binary': {
-                'random': BinaryTree(),
-                'sorted': BinaryTree()
-            },
-            'avl': {
-                'random': AVLTree(),
-                'sorted': AVLTree()
+            trees = {
+                'sequencial': {
+                    'random': SequentialList(),
+                    'sorted': SequentialList()
+                },
+                'binary': {
+                    'random': BinaryTree(),
+                    'sorted': BinaryTree()
+                },
+                'avl': {
+                    'random': AVLTree(),
+                    'sorted': AVLTree()
+                }
             }
-        }
 
-        print(f"Populating trees for random data of size {size}...")
-        for record in randomRecords:
-            key, data1, data2 = record
-            trees['sequencial']['random'].insert(key, data1, data2)
-            trees['binary']['random'].insert(key, data1, data2)
-            trees['avl']['random'].root = trees['avl']['random'].insert(trees['avl']['random'].root, key, data1, data2)
-        print("Trees populated with random data.")
+            print(f"Populating trees for random data of size {size} in sample {sample + 1}...")
+            for record in randomRecords:
+                key, data1, data2 = record
+                trees['sequencial']['random'].insert(key, data1, data2)
+                trees['binary']['random'].insert(key, data1, data2)
+                trees['avl']['random'].root = trees['avl']['random'].insert(trees['avl']['random'].root, key, data1, data2)
+            print("Trees populated with random data.")
 
-        print(f"Populating trees for sorted data of size {size}...")
-        for record in sortedRecords:
-            key, data1, data2 = record
-            trees['sequencial']['sorted'].insert(key, data1, data2)
-            trees['binary']['sorted'].insert(key, data1, data2)
-            trees['avl']['sorted'].root = trees['avl']['sorted'].insert(trees['avl']['sorted'].root, key, data1, data2)
-        print("Trees populated with sorted data.")
+            print(f"Populating trees for sorted data of size {size} in sample {sample + 1}...")
+            for record in sortedRecords:
+                key, data1, data2 = record
+                trees['sequencial']['sorted'].insert(key, data1, data2)
+                trees['binary']['sorted'].insert(key, data1, data2)
+                trees['avl']['sorted'].root = trees['avl']['sorted'].insert(trees['avl']['sorted'].root, key, data1, data2)
+            print("Trees populated with sorted data.")
 
-        print("Selecting known and unknown keys for search tests...")
-        knownKeys = pick_known_keys(randomRecords)
-        unknownKeys = pick_unknown_keys(randomRecords)
-        print("Keys selected.")
+            print("Selecting known and unknown keys for search tests...")
+            knownKeys = pick_known_keys(randomRecords)
+            unknownKeys = pick_unknown_keys(randomRecords)
+            print("Keys selected.")
 
-        for tree_type, tree_variants in trees.items():
-            for variant, tree in tree_variants.items():
-                root = tree.root if tree_type == 'avl' else None
-                print(f"Testing known keys in {tree_type} tree with {variant} data...")
+            for tree_type, tree_variants in trees.items():
+                for variant, tree in tree_variants.items():
+                    root = tree.root if tree_type == 'avl' else None
+                    print(f"Testing known keys in {tree_type} tree with {variant} data in sample {sample + 1}...")
 
-                for key in knownKeys:
-                    total_comparisons = 0
-                    total_time = 0.0
-                    for _ in range(num_samples):
+                    for key in knownKeys:
                         start_time = time.perf_counter()
                         _, comparisons = tree.search_with_count(root, key)
                         elapsed_time = (time.perf_counter() - start_time) * 1000
-                        total_comparisons += comparisons
-                        total_time += elapsed_time
-                    avg_comparisons = total_comparisons / num_samples
-                    avg_time = total_time / num_samples
-                    report_data.append([size, tree_type, variant, key, "known", avg_comparisons, avg_time])
+                        report_data.append([size, sample + 1, tree_type, variant, key, "known", comparisons, elapsed_time])
 
-                print(f"Testing unknown keys in {tree_type} tree with {variant} data...")
+                    print(f"Testing unknown keys in {tree_type} tree with {variant} data in sample {sample + 1}...")
 
-                for key in unknownKeys:
-                    total_comparisons = 0
-                    total_time = 0.0
-                    for _ in range(num_samples):
+                    for key in unknownKeys:
                         start_time = time.perf_counter()
                         _, comparisons = tree.search_with_count(root, key)
                         elapsed_time = (time.perf_counter() - start_time) * 1000
-                        total_comparisons += comparisons
-                        total_time += elapsed_time
-                    avg_comparisons = total_comparisons / num_samples
-                    avg_time = total_time / num_samples
-                    report_data.append([size, tree_type, variant, key, "unknown", avg_comparisons, avg_time])
+                        report_data.append([size, sample + 1, tree_type, variant, key, "unknown", comparisons, elapsed_time])
 
     print("Saving report to /reports folder...")
     save_report(report_data)
