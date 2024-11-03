@@ -14,6 +14,7 @@ from utils.save_report import save_report
 def main():
     sizes = [100, 500, 1000, 5000, 10000]
     report_data = []
+    num_samples = 15
 
     for size in sizes:
         print(f"Generating CSV files with {size} records...")
@@ -70,30 +71,36 @@ def main():
                 print(f"Testing known keys in {tree_type} tree with {variant} data...")
 
                 for key in knownKeys:
-                    start_time = time.perf_counter()
-                    _, comparisons = tree.search_with_count(root, key)
-                    elapsed_time = (time.perf_counter() - start_time) * 1000
-                    report_data.append([size, tree_type, variant, key, "known", comparisons, elapsed_time])
+                    total_comparisons = 0
+                    total_time = 0.0
+                    for _ in range(num_samples):
+                        start_time = time.perf_counter()
+                        _, comparisons = tree.search_with_count(root, key)
+                        elapsed_time = (time.perf_counter() - start_time) * 1000
+                        total_comparisons += comparisons
+                        total_time += elapsed_time
+                    avg_comparisons = total_comparisons / num_samples
+                    avg_time = total_time / num_samples
+                    report_data.append([size, tree_type, variant, key, "known", avg_comparisons, avg_time])
 
                 print(f"Testing unknown keys in {tree_type} tree with {variant} data...")
 
                 for key in unknownKeys:
-                    start_time = time.perf_counter()
-                    _, comparisons = tree.search_with_count(root, key)
-                    elapsed_time = (time.perf_counter() - start_time) * 1000
-                    report_data.append([size, tree_type, variant, key, "unknown", comparisons, elapsed_time])
-    
+                    total_comparisons = 0
+                    total_time = 0.0
+                    for _ in range(num_samples):
+                        start_time = time.perf_counter()
+                        _, comparisons = tree.search_with_count(root, key)
+                        elapsed_time = (time.perf_counter() - start_time) * 1000
+                        total_comparisons += comparisons
+                        total_time += elapsed_time
+                    avg_comparisons = total_comparisons / num_samples
+                    avg_time = total_time / num_samples
+                    report_data.append([size, tree_type, variant, key, "unknown", avg_comparisons, avg_time])
+
     print("Saving report to /reports folder...")
     save_report(report_data)
     print("Report saved successfully!")
 
 if __name__ == "__main__":
     main()
-
-
-
-        
-        
-
-
-        
